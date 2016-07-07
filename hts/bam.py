@@ -211,10 +211,8 @@ class Alignment(object):
     @property
     def seq(self):
         """Nucleotide sequence of read."""
-        kstr = ffi.new('kstring_t *', {'m': 0, 'l': 0, 's': ffi.NULL})
-        r = libhts.bam_get_read_seq(self._b, kstr)
-        assert r == kstr.l, (r, kstr.l)
-        return ffi.string(kstr.s)
+        seq_uint8_ptr = libhts.bam_get_seq(self._b)
+        return ''.join("=ACMGRSVTWYHKDBN"[libhts.bam_seqi(seq_uint8_ptr, i)] for i in range(self._b.core.l_qseq))
 
     @property
     def flag_str(self):
