@@ -64,7 +64,7 @@ class Alignment(object):
 
         s_aux_ptr = libhts.bam_get_aux(self._b)
         i = 0
-        func = {'Z':libhts.bam_aux2Z, 'A': libhts.bam_aux2Z,
+        func = {'Z':libhts.bam_aux2Z, 'A': libhts.bam_aux2A,
                 'i': libhts.bam_aux2i,
                 'I': libhts.bam_aux2i,
                 'c': libhts.bam_aux2i,
@@ -79,8 +79,10 @@ class Alignment(object):
             key = "".join(chr(s) for s in s_aux_ptr[i:i + 2])
             ftype = chr(s_aux_ptr[i + 2])
             val = func[ftype](s_aux_ptr[i + 2:i + 2])
-            if ftype in 'ZA':
+            if ftype == 'Z':
                 val = ffi.string(val)
+            elif ftype == 'A':
+                val = chr(val)
             auxs.append((key, ftype, val))
             i += 3 + libhts.skip_aux(s_aux_ptr[i + 2:l])
 
